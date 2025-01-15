@@ -1,136 +1,181 @@
-// import React, { useRef, useEffect, useState } from 'react';
-// import * as d3 from "d3";
-// import AnimationControls from '../Animations/AnimationControl';
-// import Header from '../../layouts/Header';
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import axios from "axios";
+import Header from "./Header";
+import Replay from "./Replay";
 
-// const LinearSearch = () => {
-//   const [speed, setSpeed] = useState(600);
-//   const [isRunning, setIsRunning] = useState(false);
-//   const [isPaused, setIsPaused] = useState(false);
-//   const [isStopped, setIsStopped] = useState(true);
-//   const [array, setArray] = useState([]); // Store the array in state
+const UserPage = () => {
+  const location = useLocation();
+  const { id, name } = location.state || { id: "N/A", name: "N/A" };
+  const [pageName] = useState("User Page");
+  const [records, setRecords] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [recordsPerPage, setRecordsPerPage] = useState(10); // Default records per page
+  const [totalRecords, setTotalRecords] = useState(0); // Total number of records
+  const [currentRecord, setCurrentRecord] = useState(null);
 
-//   const target = 42; // Fixed target for this example
-//   const d3Container = useRef(null);
-//   const speedRef = useRef(speed);
-//   const pausedRef = useRef(isPaused);
-//   const intervalIdRef = useRef(null);
+  useEffect(() => {
+    const fetchRecords = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3000/api/archive/${id}`);
+        const userRecords = response.data.filter((record) => record.id === id);
+        setRecords(userRecords); // Set filtered records
+        setTotalRecords(userRecords.length); // Set total number of records
+      } catch (error) {
+        console.error("Error fetching user records:", error);
+        alert("Failed to fetch user records. Please try again.");
+      } finally {
+        setLoading(false); // Set loading to false when done
+      }
+    };
 
-//   useEffect(() => {
-//     speedRef.current = speed;
-//     pausedRef.current = isPaused;
-//   }, [speed, isPaused]);
+    if (id !== "N/A") {
+      fetchRecords(); // Fetch records only if `id` is valid
+    }
+  }, [id]);
 
-//   // Initialize array only once or when explicitly reset
-//   useEffect(() => {
-//     const initialArray = Array.from({ length: 50 }, () => Math.floor(Math.random() * 100));
-//     setArray(initialArray);
-//   }, []); // Empty dependency array ensures this runs only once
+  // Pagination Logic
+  const indexOfLastRecord = currentPage * recordsPerPage;
+  const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
+  const currentRecords = records.slice(indexOfFirstRecord, indexOfLastRecord);
 
-//   useEffect(() => {
-//     if (!array.length) return; // Wait until array is initialized
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-//     const svgWidth = 1200;
-//     const svgHeight = 600;
-//     const barWidth = svgWidth / array.length;
+  // Handle change of records per page
+  const handleRecordsPerPageChange = (e) => {
+    setRecordsPerPage(Number(e.target.value)); // Update the records per page
+    setCurrentPage(1); // Reset to first page when records per page change
+  };
 
-//     const svg = d3.select(d3Container.current)
-//       .append("svg")
-//       .attr("width", svgWidth)
-//       .attr("height", svgHeight);
+  const handlePlay = (record) => {
+    setCurrentRecord(record);
+  };
 
-//     svg.selectAll("rect")
-//       .data(array)
-//       .enter()
-//       .append("rect")
-//       .attr("x", (d, i) => i * barWidth)
-//       .attr("y", d => svgHeight - d * 2)
-//       .attr("width", barWidth - 5)
-//       .attr("height", d => d * 2)
-//       .attr("fill", "steelblue")
-//       .attr("stroke", "black");
+  const handleDelete = async (recordId, topic, label) => {
+    const isConfirmed = window.confirm("Are you sure you want to delete this record?");
+    alert(`${id}
+      ${topic}
+      ${label}`)
+    if (isConfirmed) {
+      try {
+        const response = await axios.delete(`http://localhost:3000/api/archive/${id}/${topic}/${label}`);
 
-//     function visualizeSearch() {
-//       let currentIndex = 0;
-//       if (intervalIdRef.current) clearInterval(intervalIdRef.current);
+        if (response.status === 200) {
+          setRecords(records.filter((record) => record._id !== recordId));
+          alert("Record deleted successfully!");
+        } else {
+          alert("Failed to delete record. Please try again.");
+        }
+      } catch (error) {
+        console.error("Error deleting record:", error);
+        alert("An error occurred while deleting the record.");
+      }
+    }
+  };
 
-//       intervalIdRef.current = setInterval(() => {
-//         if (pausedRef.current) return;
+  return (
+    <div>
+      <Header pageName={pageName} userId={id} userName={name} />
 
-//         if (currentIndex > 0) {
-//           svg.select(`rect:nth-child(${currentIndex})`)
-//             .transition()
-//             .duration(speedRef.current / 2)
-//             .attr("fill", "red");
-//         }
+      {loading ? (
+        <p>Loading records...</p>
+      ) : (
+        <>
+          {records.length > 0 ? (
+            <div>
+              <div className="mb-4">
+                <label htmlFor="recordsPerPage" className="mr-2">Records per page: </label>
+                <select
+                  id="recordsPerPage"
+                  value={recordsPerPage}
+                  onChange={handleRecordsPerPageChange}
+                  className="px-2 py-1 border rounded"
+                >
+                  <option value={5}>5</option>
+                  <option value={10}>10</option>
+                  <option value={20}>20</option>
+                  <option value={totalRecords}>All</option>
+                </select>
+              </div>
 
-//         if (currentIndex >= array.length) {
-//           clearInterval(intervalIdRef.current);
-//           setIsRunning(false);
-//           setIsStopped(true);
-//           return;
-//         }
+              <table className="table-auto w-full border-collapse">
+                <thead>
+                  <tr>
+                    <th className="border px-4 py-2">SL</th>
+                    <th className="border px-4 py-2">Label</th>
+                    <th className="border px-4 py-2">Topic</th>
+                    <th className="border px-4 py-2">Input</th>
+                    <th className="border px-4 py-2">Target</th>
+                    <th className="border px-4 py-2">Verdict</th>
+                    <th className="border px-4 py-2">Saved Time</th>
+                    <th className="border px-4 py-2">Play</th>
+                    <th className="border px-4 py-2">Delete</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentRecords.map((record, index) => (
+                    <tr key={record._id}>
+                      <td className="border px-4 py-2">{indexOfFirstRecord + index + 1}</td>
+                      <td className="border px-4 py-2">{record.label}</td>
+                      <td className="border px-4 py-2">{record.topic}</td>
+                      <td className="border px-4 py-2">{JSON.stringify(record.input)}</td>
+                      <td className="border px-4 py-2">{record.target}</td>
+                      <td className="border px-4 py-2">{record.verdict}</td>
+                      <td className="border px-4 py-2">{new Date(record.createdAt).toLocaleString()}</td>
+                      <td className="border px-4 py-2">
+                        <button
+                          onClick={() => handlePlay(record)}
+                          className="bg-blue-500 text-white px-2 py-1 rounded"
+                        >
+                          Play
+                        </button>
+                      </td>
+                      <td className="border px-4 py-2">
+                        <button
+                          onClick={() => handleDelete(record._id, record.topic, record.label)}
+                          className="bg-red-500 text-white px-2 py-1 rounded"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p>No records found for this user.</p>
+          )}
 
-//         const value = array[currentIndex];
-//         const bar = svg.select(`rect:nth-child(${currentIndex + 1})`);
+          {/* Pagination Controls */}
+          <div className="flex justify-center mt-4">
+            <button
+              onClick={() => paginate(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-4 py-2 bg-gray-300 rounded-l"
+            >
+              Prev
+            </button>
+            <button
+              onClick={() => paginate(currentPage + 1)}
+              disabled={currentPage * recordsPerPage >= records.length}
+              className="px-4 py-2 bg-gray-300 rounded-r"
+            >
+              Next
+            </button>
+          </div>
+        </>
+      )}
 
-//         bar.transition()
-//           .duration(speedRef.current / 2)
-//           .attr("fill", "orange");
+      {currentRecord && (
+        <Replay
+          record={currentRecord}
+          onClose={() => setCurrentRecord(null)} // Close the replay modal
+        />
+      )}
+    </div>
+  );
+};
 
-//         setTimeout(() => {
-//           if (value === target) {
-//             bar.transition()
-//               .duration(speedRef.current / 2)
-//               .attr("fill", "green");
-//             clearInterval(intervalIdRef.current);
-//             setIsRunning(false);
-//             setIsStopped(true);
-//           } else {
-//             bar.transition()
-//               .duration(speedRef.current / 2)
-//               .attr("fill", "red");
-//           }
-//         }, speedRef.current / 2);
-
-//         currentIndex++;
-//       }, speedRef.current);
-//     }
-
-//     if (isRunning && !isStopped) visualizeSearch();
-
-//     return () => {
-//       clearInterval(intervalIdRef.current);
-//       d3.select(d3Container.current).select("svg").remove();
-//     };
-//   }, [array, isRunning, isStopped]);
-
-//   return (
-//     <>
-//       <Header pageName="Linear Search" />
-//       <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
-//         <AnimationControls
-//           speed={speed}
-//           setSpeed={setSpeed}
-//           isRunning={isRunning}
-//           isPaused={isPaused}
-//           isStopped={isStopped}
-//           onRun={() => {
-//             setIsRunning(true);
-//             setIsPaused(false);
-//             setIsStopped(false);
-//           }}
-//           onPause={() => setIsPaused((prev) => !prev)}
-//           onStop={() => {
-//             setIsRunning(false);
-//             setIsPaused(false);
-//             setIsStopped(true);
-//           }}
-//         />
-//         <div ref={d3Container}></div>
-//       </div>
-//     </>
-//   );
-// };
-
-// export default LinearSearch;
+export default UserPage;

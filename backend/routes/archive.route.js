@@ -7,7 +7,6 @@ router.get("/:id/:topic/:label", getSingle);
 router.get("/", getArchives);
 router.get("/:id", getArchive);
 router.post("/", createArchive);
-// router.put("/:id", updateArchive);
 router.put("/:id/:topic/:label", updateArchive);
 router.delete("/:id/:topic/:label", deleteArchive);
 

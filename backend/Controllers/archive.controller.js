@@ -1,4 +1,3 @@
-const mongoose = require("mongoose")
 const Archive = require("../models/archive.model.js")
 
 const getArchives = async(req, res) => {
@@ -10,18 +9,37 @@ const getArchives = async(req, res) => {
     }
 }
 
-const getArchive = async(req, res) => {
-    try{
-        const {id} = req.params;
-        const archive = await Archive.findById(id);
-        res.status(200).json(archive)
-    }catch(error){
-        res.status(500).json({message: error.message})
+// const getArchive = async(req, res) => {
+//     try{
+//         const {id} = req.params;
+//         const archive = await Archive.findById(id);
+//         res.status(200).json(archive)
+//     }catch(error){
+//         res.status(500).json({message: error.message})
+//     }
+// }
+
+const getArchive = async (req, res) => {
+    try {
+      const { id } = req.params; // User id
+      console.log(id);
+    const archives = await Archive.find({ id }); 
+      if (archives.length === 0) {
+        return res.status(404).json({ message: `No records found for user ID: ${id}` });
+      }
+      // Send back all records for the user
+      res.status(200).json(archives);
+    } catch (error) {
+      console.error("Error fetching archives:", error);
+      res.status(500).json({ message: error.message });
     }
-}
+  };
+  
 
 const createArchive = async (req, res) => {
     try {
+        console.log(req.body);
+        
         const { id, topic, label } = req.body;
         const existingEntry = await Archive.findOne({ id, topic, label });
         if (existingEntry) {

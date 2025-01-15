@@ -18,6 +18,10 @@ const ArchiveSchema = mongoose.Schema(
       type: mongoose.Schema.Types.Mixed, 
       required: true,
     },
+    target: {
+      type: String, 
+      required: true,
+    },
     verdict: {
       type: String,
       required: true,

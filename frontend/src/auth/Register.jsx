@@ -30,40 +30,55 @@ const Register = ({ setIsLogin }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm">
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Register</h2>
+    <>
+    <div className="bg-gradient-to-r from-purple-500 via-blue-500 to-indigo-500 py-4 shadow-md">
+        <h1 className="text-3xl font-extrabold text-white text-center tracking-wide">
+          Code Canvas
+        </h1>
+    </div>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
+    <div className="min-h-screen bg-gradient-to-br from-green-100 to-blue-200 flex items-center justify-center">
+      <div className="bg-white p-10 rounded-lg shadow-2xl w-full max-w-md">
+        <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
+          Create an Account
+        </h2>
+  
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* ID Field */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-600">ID:</label>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              ID:
+            </label>
             <input
               type="text"
               {...register("id", { required: "ID is required" })}
-              className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             {errors.id && (
               <p className="text-red-500 text-sm mt-1">{errors.id.message}</p>
             )}
           </div>
-
+  
           {/* Name Field */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-600">Name:</label>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Name:
+            </label>
             <input
               type="text"
               {...register("name", { required: "Name is required" })}
-              className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             {errors.name && (
               <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
             )}
           </div>
-
+  
           {/* Password Field */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-600">Password:</label>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Password:
+            </label>
             <input
               type="password"
               {...register("password", {
@@ -73,31 +88,36 @@ const Register = ({ setIsLogin }) => {
                   message: "Password must be at least 6 characters",
                 },
               })}
-              className="w-full px-4 py-2 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             {errors.password && (
               <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
             )}
           </div>
-
+  
+          {/* Submit Button */}
           <button
             type="submit"
-            className="w-full py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-500 transition-all duration-300"
+            className="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-500 transition-all duration-300 shadow-md"
           >
             Register
           </button>
         </form>
-
+  
         {/* Already have an account? */}
-        <button
-          onClick={switchToLogin}
-          className="w-full mt-4 text-blue-500 hover:underline text-sm"
-        >
-          Already have an account? Login
-        </button>
+        <p className="mt-4 text-sm text-center text-gray-600">
+          Already have an account?{" "}
+          <button
+            onClick={switchToLogin}
+            className="text-blue-600 hover:underline font-medium"
+          >
+            Login
+          </button>
+        </p>
       </div>
     </div>
-  );
+    </>
+  );  
 };
 
 export default Register;

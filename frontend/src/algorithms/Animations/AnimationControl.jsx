@@ -1,11 +1,17 @@
 import React from 'react';
 
 const AnimationControls = ({ speed, setSpeed, isRunning, isPaused, onRun, onPause, onReset }) => {
+  const handleSpeedChange = (e) => {
+    const value = Number(e.target.value);
+    // Invert the speed behavior: higher range value makes the animation slower.
+    setSpeed(value);
+  };
+
   return (
     <div className="flex flex-col items-center">
       <div className="mb-4">
         <label className="block text-gray-700 font-medium mb-2">
-          Animation Speed: {speed}ms
+          Step Delay: {speed}ms
         </label>
         <input
           type="range"
@@ -13,7 +19,7 @@ const AnimationControls = ({ speed, setSpeed, isRunning, isPaused, onRun, onPaus
           max="2000"
           step="100"
           value={speed}
-          onChange={(e) => setSpeed(Number(e.target.value))}
+          onChange={handleSpeedChange}
           className="w-full"
         />
       </div>

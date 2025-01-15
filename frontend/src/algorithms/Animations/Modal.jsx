@@ -29,7 +29,7 @@ const Modal = ({ isOpen, onClose, onSubmit, numElements }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-      <div className="bg-white p-6 rounded-lg w-4/5 max-w-md max-h-[90vh] overflow-y-auto relative">
+      <div className="bg-white p-8 rounded-lg shadow-xl w-4/5 max-w-lg max-h-[80vh] overflow-y-auto relative">
         {/* Close Button */}
         <button
           className="absolute top-4 right-4 text-gray-600 hover:text-red-600 focus:outline-none"
@@ -52,13 +52,15 @@ const Modal = ({ isOpen, onClose, onSubmit, numElements }) => {
         </button>
 
         {/* Modal Title */}
-        <div className="text-2xl font-semibold mb-6 text-center">Enter Numbers</div>
+        <div className="text-2xl font-semibold mb-6 text-center text-gray-800">
+          Enter Numbers
+        </div>
 
         {/* Modal Content */}
-        <div className="space-y-4">
+        <div className="space-y-5">
           {Array.from({ length: numElements }).map((_, index) => (
             <div key={index}>
-              <label className="block text-gray-700 mb-1">
+              <label className="block text-gray-700 text-lg mb-2">
                 Element {index + 1}:
               </label>
               <input
@@ -67,7 +69,7 @@ const Modal = ({ isOpen, onClose, onSubmit, numElements }) => {
                 max="50"
                 value={inputValues[index]}
                 onChange={(e) => handleInputChange(index, e.target.value)}
-                className="border border-gray-300 rounded-md py-2 px-3 w-full focus:outline-none focus:border-blue-500"
+                className="border border-gray-300 rounded-md py-3 px-4 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-lg"
               />
             </div>
           ))}
@@ -75,7 +77,7 @@ const Modal = ({ isOpen, onClose, onSubmit, numElements }) => {
 
         {/* Submit Button */}
         <button
-          className="bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-md py-2 px-4 mt-6 w-full"
+          className="bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-md py-3 px-6 mt-6 w-full transition-all"
           onClick={handleSubmit}
         >
           Submit

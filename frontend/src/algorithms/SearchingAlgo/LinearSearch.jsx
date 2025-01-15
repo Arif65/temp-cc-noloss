@@ -40,9 +40,10 @@ const LinearSearch = () => {
         userId={id}
         userName={name}
       />
-      <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
+      <div className="flex flex-col items-center  h-screen bg-gray-100">
         <UserInput
           numElements={numElements}
+          target={target}
           isRandomInputChecked={isRandomInput}
           isUserInputChecked={!isRandomInput}
           onRandomInputChange={() => {
@@ -56,6 +57,7 @@ const LinearSearch = () => {
               setNumElements(10); // Reset to default if invalid
             }
           }}
+          onTargetChange={(value) => setTarget(value)}
           onModalSubmit={handleUserInputSubmit}
         />
 
@@ -69,11 +71,12 @@ const LinearSearch = () => {
 
         {/* Button to open the modal */}
         <button
-          className="bg-blue-500 text-white px-4 py-2 rounded-md mt-4"
+          className="bg-blue-500 text-white px-6 py-3 rounded-lg mt-10 transition-all transform hover:bg-blue-600 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
           onClick={() => setIsModalOpen(true)}
         >
-          Start Linear Search Animation
+          Start Animation
         </button>
+
 
         {/* Animation Modal */}
         <LinearSearchModal
@@ -92,36 +95,3 @@ const LinearSearch = () => {
 };
 
 export default LinearSearch;
-
-
-// To use this Modal just by passing 4 props
-
-// import React, { useState } from "react";
-// import LinearSearchModal from "./LinearSearchModal";
-
-// const AnotherComponent = () => {
-//   const [isModalOpen, setIsModalOpen] = useState(false);
-
-//   const arrayData = [5, 10, 15, 20, 25];
-//   const targetValue = 15;
-
-//   return (
-//     <div>
-//       <button
-//         onClick={() => setIsModalOpen(true)}
-//         className="bg-blue-500 text-white px-4 py-2"
-//       >
-//         Open Linear Search Modal
-//       </button>
-
-//       <LinearSearchModal
-//         isOpen={isModalOpen}
-//         onClose={() => setIsModalOpen(false)}
-//         array={arrayData}
-//         target={targetValue}
-//       />
-//     </div>
-//   );
-// };
-
-// export default AnotherComponent;

@@ -16,7 +16,7 @@ app.use("/api/users", userRoute)
 app.use("/api/archive", archiveRoute)
 
 app.listen(3000, () =>{
-    console.log("3000 e chole");
+    console.log("http://localhost:3000/");
 })
 
 mongoose.connect("mongodb+srv://admin:l8bYf0WNJHhYdCp9@cluster0.5aqh7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
